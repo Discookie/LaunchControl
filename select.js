@@ -44,10 +44,8 @@ var press = function (button) {
                 vars.timeout = 100;
                 vars.current = 0;
             }
-    }
-    if (!vars.current) {
-        if (button.x == 7 && button.y == 8) {
-            launchpad.renderBytes([
+    } else if (button.x == 7 && button.y == 8) {
+        launchpad.renderBytes([
                 "000000000",
                 "000000000",
                 "000000000",
@@ -58,8 +56,9 @@ var press = function (button) {
                 "000000000",
                 "00000000"
             ], true);
-            process.exit();
-        }
+        process.exit();
+    }
+    if (!vars.current) {
         if (mods[button.y * 9 + button.x]) {
             launchpad.renderBytes([
                 "000000000",
