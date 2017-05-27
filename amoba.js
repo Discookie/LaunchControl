@@ -14,8 +14,8 @@ var players = 2;
 var ox = 0;
 var oy = 0;
 var corners = {
-    minx: 0,
-    miny: 0,
+    minx: 8,
+    miny: 8,
     maxx: 0,
     maxy: 0
 };
@@ -26,6 +26,7 @@ function onClick(button) {
     } else {
         click(button.x, button.y);
     }
+    return false;
 }
 
 function special(lx, ly) {
@@ -45,8 +46,9 @@ function special(lx, ly) {
 }
 
 function click(lx, ly) {
+    console.log("cl " + lx + " " + ly);
     if (getPixel(lx + ox, ly + oy) == 0) {
-        setPixel(lx, ly, getCurrent());
+        setPixel(lx + ox, ly + oy, getCurrent());
         turn++;
         reDraw();
     }
@@ -57,6 +59,10 @@ function setPixel(gx, gy, state) {
         field[gx] = {};
     }
     field[gx][gy] = state;
+    corners.minx = Math.min(corners.minx, gy);
+    corners.maxx = Math.max(corners.maxx, gy);
+    corners.miny = Math.min(corners.miny, gx);
+    corners.maxy = Math.max(corners.maxy, gx);
     reDraw();
 }
 
@@ -73,21 +79,23 @@ function getPixel(gx, gy) {
 }
 
 function reDraw() {
-    var arr = {};
+    var arr = [];
     for (var i = 0; i < 8; i++) {
-        var temp = {};
+        var temp = [];
         for (var j = 0; j < 8; j++) {
-            temp[j] = getColor(getPixel(ox + i, oy + j));
+            temp[j] = getColor(getPixel(ox + j, oy + i));
         }
         arr[i] = temp;
     }
-    var tempu = {};
-    tempu[0] = (corners.minx < ox) ? 3 : 0;
-    tempu[1] = (corners.maxx > ox + 8) ? 3 : 0;
-    tempu[2] = (corners.miny < oy) ? 3 : 0;
-    tempu[3] = (corners.maxy > ox + 8) ? 3 : 0;
+    var tempu = [];
+    tempu[0] = (corners.minx < oy) ? 3 : 0;
+    tempu[1] = (corners.maxx > oy + 7) ? 3 : 0;
+    tempu[2] = (corners.miny < ox) ? 3 : 0;
+    tempu[3] = (corners.maxy > ox + 7) ? 3 : 0;
     tempu[4] = getColor(getCurrent());
+    arr[8] = tempu;
     launchpad.renderBytes(arr);
+    return false;
 }
 
 function getColor(state) {

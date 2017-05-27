@@ -39,41 +39,53 @@ var press = function (button) {
                     vars.current = 0;
                 }
             }
-        }
-        if (mods[vars.current].press)
+        } else if (mods[vars.current].press)
             if (mods[vars.current].press(button)) {
                 vars.timeout = 100;
                 vars.current = 0;
             }
-    } else {
+    }
+    if (!vars.current) {
         if (button.x == 7 && button.y == 8) {
-            launchpad.renderBytes({
-                0: "000000000",
-                1: "000000000",
-                2: "000000000",
-                3: "000000000",
-                4: "000000000",
-                5: "000000000",
-                6: "000000000",
-                7: "000000000",
-                8: "00000000"
-            });
+            launchpad.renderBytes([
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "00000000"
+            ], true);
             process.exit();
         }
         if (mods[button.y * 9 + button.x]) {
-            launchpad.renderBytes({
-                0: "000000000",
-                1: "000000000",
-                2: "000000000",
-                3: "000000000",
-                4: "000000000",
-                5: "000000000",
-                6: "000000000",
-                7: "000000000",
-                8: "00000000"
-            });
+            launchpad.renderBytes([
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "000000000",
+                "00000000"
+            ], true);
             vars.current = button.y * 9 + button.x;
             vars.timeout = mods[vars.current].timeout;
+            if (button.x == 7 && button.y == 8) {
+                if (mods[vars.current].exit || !(mods[vars.current].update)) {
+                    if (mods[vars.current].exit()) {
+                        vars.timeout = 100;
+                        vars.current = 0;
+                    }
+                }
+            } else if (mods[vars.current].press)
+                if (mods[vars.current].press(button)) {
+                    vars.timeout = 100;
+                    vars.current = 0;
+                }
         }
     }
 };
