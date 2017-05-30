@@ -122,12 +122,13 @@ module.exports = {
         if (running) {
             restartable = false;
             running = false;
-            console.log("Shutdown");
             //console.log(running==true?"true":"false");
 
-        } else {
-            module.exports.ready();
-            restartable = false;
         }
+    },
+    exit: function () {
+        restartable = false;
+        running = false;
+        return false;
     }
 };
