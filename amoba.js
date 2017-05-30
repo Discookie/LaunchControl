@@ -46,10 +46,10 @@ function onClick(button) {
 }
 
 function special(lx, ly) {
-    if (lx == 0) {
+    if (lx === 0) {
         oy--;
     }
-    if (lx == 1) {
+    if (lx === 1) {
         oy++;
     }
     if (lx == 2) {
@@ -64,6 +64,28 @@ function special(lx, ly) {
     }
     if (lx == 5) {
         undo();
+    }
+    if (lx == 6) {
+        if (turn != 0) return;
+        players = (players) % 4 + 1;
+        var bt = launchpad.getButton(8, 6);
+        switch (players) {
+            case 0:
+                bt.light(0);
+                break;
+            case 1:
+                bt.light(3);
+                break;
+            case 2:
+                bt.light(48);
+                break;
+            case 3:
+                bt.light(16 | 2);
+                break;
+            case 4:
+                bt.light(32 | 1);
+                break;
+        }
     }
     reDraw();
 }
@@ -123,6 +145,9 @@ function reDraw() {
     tempu[2] = (corners.miny < ox) ? 3 : 0;
     tempu[3] = (corners.maxy > ox + 7) ? 3 : 0;
     tempu[4] = getColor(getCurrent());
+    tempu[5] = 0;
+    if (turn == 0) tempu[6] = getColor(players);
+    else tempu[6] = 0;
     arr[8] = tempu;
     launchpad.renderBytes(arr);
     return false;
