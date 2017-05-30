@@ -1,6 +1,6 @@
 module.exports = {
     press: onClick,
-    ready: reDraw,
+    ready: ready,
     timeout: 200,
     exit: function () {
         return true;
@@ -8,9 +8,10 @@ module.exports = {
 };
 
 var field = {}; //0 or undefined: nobody; 1-4 red green yellow orage
+var steps = [];
 
 var turn = 0;
-var players = 2;
+var players = 3;
 var ox = 0;
 var oy = 0;
 var corners = {
@@ -19,6 +20,21 @@ var corners = {
     maxx: 0,
     maxy: 0
 };
+
+function ready() {
+    corners = {
+        minx: 8,
+        miny: 8,
+        maxx: 0,
+        maxy: 0
+    };
+    field = [];
+    steps = [];
+    turn = 0;
+    ox = 0;
+    oy = 0;
+    reDraw();
+}
 
 function onClick(button) {
     if (button.special) {
@@ -42,11 +58,17 @@ function special(lx, ly) {
     if (lx == 3) {
         ox++;
     }
+    if (lx == 4) {
+        ox = 0;
+        oy = 0;
+    }
+    if (lx == 5) {
+        undo();
+    }
     reDraw();
 }
 
 function click(lx, ly) {
-    console.log("cl " + lx + " " + ly);
     if (getPixel(lx + ox, ly + oy) == 0) {
         setPixel(lx + ox, ly + oy, getCurrent());
         turn++;
@@ -54,11 +76,19 @@ function click(lx, ly) {
     }
 }
 
+function undo() {
+    if (steps.length == 0) return;
+    setPixel(steps[steps.length - 1][0], steps[steps.length - 1][1], 0);
+    steps.pop();
+    turn--;
+}
+
 function setPixel(gx, gy, state) {
     if (field[gx] == undefined) {
         field[gx] = {};
     }
     field[gx][gy] = state;
+    if (state) steps[steps.length] = [gx, gy];
     corners.minx = Math.min(corners.minx, gy);
     corners.maxx = Math.max(corners.maxx, gy);
     corners.miny = Math.min(corners.miny, gx);
@@ -108,7 +138,7 @@ function getColor(state) {
         case 2:
             return 48;
         case 3:
-            return 16 | 2;
+            return (players == 3 ? 34 : (16 | 2));
         case 4:
             return 32 | 1;
         default:
