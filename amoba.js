@@ -67,7 +67,7 @@ function special(lx, ly) {
     }
     if (lx == 6) {
         if (turn != 0) return;
-        players = (players) % 4 + 1;
+        players = (players - 1) % 3 + 2;
         var bt = launchpad.getButton(8, 6);
         switch (players) {
             case 0:
