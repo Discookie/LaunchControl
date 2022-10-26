@@ -3,10 +3,12 @@
     "description": "A task wrapper and some programs for the non-rgb Novation Launchpad",
     "version": "0.0.3",
     "author": "Discookie <mateservers+lcgh@gmail.com>",
-    "contributors": [{
-        "name": "marci07iq",
-        "email": "foo.bar@example.com"
-    }],
+    "contributors": [
+        {
+            "name": "marci07iq",
+            "email": "foo.bar@example.com"
+        }
+    ],
     "scripts": {
         "start": "node select.js"
     },
@@ -27,7 +29,7 @@
         "midi-launchpad": "git://github.com/discookie/node-midi-launchpad#master",
         "midi": "0.9.5",
         "sleep": "5.1.1",
-        "nanotimer": "0.3.14",
+        "nanotimer": "0.3.14"
     },
     "preferGlobal": false,
     "private": true,

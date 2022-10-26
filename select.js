@@ -1,16 +1,29 @@
-var rb = require("./rainbow.js");
 var mods = [
     null,
-    rb,
-    require("./amoba.js")
+    require("./rainbow"),
+    require("./amoeba"),
+    require("./chain"),
 ]
 
-var vars = require("./vars.js");
+var vars = require("./vars");
 
 var midiConnector;
 var correct = false;
 var connected = true;
 
+var updateLibs = function (libs) {
+    mods = [null];
+    let modCount = 1;
+    for (var i = 0; i < libs.length; i++) {
+        try {
+            var currentMod = require(libs[i]);
+            mods.push(currentMod);
+        } catch (e) {
+            console.error("Error loading mod " + libs[i] + ": " + e.toString());
+        }
+    }
+    correct = false;
+}
 
 var connect = function () {
     try {
@@ -23,10 +36,11 @@ var connect = function () {
                 setTimeout(update, vars.timeout);
                 launchpad.on("press", press);
                 launchpad.on("release", release);
-                setTimeout(update, 200);
             }
         );
+        console.log("Finished initializing.");
     } catch (e) {
+        console.log("Error: " + e.toString());
         setTimeout(connect, 1000);
         return;
     }
@@ -70,7 +84,7 @@ var update = function () {
                     "00000000"
                 ], true);
                     var button;
-                    for (var i = 0; i < mods.length; i++) {
+                    for (var i = 0; i < mods.length - 1; i++) {
                         button = launchpad.getButton(i % 9, Math.floor(i / 9));
                         button.light(51);
                     }
@@ -89,7 +103,7 @@ var update = function () {
             "00000000"
         ], true);
             var button;
-            for (var i = 0; i < mods.length; i++) {
+            for (var i = 0; i < mods.length - 1; i++) {
                 button = launchpad.getButton(i % 9, Math.floor(i / 9));
                 button.light(51);
             }
@@ -139,48 +153,27 @@ var press = function (button) {
             process.exit();
         }
         if (!vars.current) {
-            if (mods[button.y * 9 + button.x]) {
+            if (mods[button.y * 9 + button.x + 1]) {
                 launchpad.renderBytes([
-                "000000000",
-                "000000000",
-                "000000000",
-                "000000000",
-                "000000000",
-                "000000000",
-                "000000000",
-                "000000000",
-                "00000000"
-            ], true);
-                vars.current = button.y * 9 + button.x;
+            	    "000000000",
+            	    "000000000",
+            	    "000000000",
+            	    "000000000",
+            	    "000000000",
+            	    "000000000",
+            	    "000000000",
+            	    "000000000",
+            	    "00000000"
+            	], true);
+                vars.current = button.y * 9 + button.x + 1;
+				console.log("Entering program " + vars.current);
                 vars.timeout = mods[vars.current].timeout;
-                if (button.x == 7 && button.y == 8) {
-                    if (mods[vars.current].exit || !(mods[vars.current].update)) {
-                        if (mods[vars.current].exit()) {
-                            vars.timeout = 100;
-                            vars.current = 0;
-                            launchpad.renderBytes([
-                            "000000000",
-                            "000000000",
-                            "000000000",
-                            "000000000",
-                            "000000000",
-                            "000000000",
-                            "000000000",
-                            "000000000",
-                            "00000000"
-                        ], true);
-                            var button;
-                            for (var i = 0; i < mods.length; i++) {
-                                button = launchpad.getButton(i % 9, Math.floor(i / 9));
-                                button.light(51);
-                            }
-                        }
-                    }
-                } else if (mods[vars.current].ready)
+                if (mods[vars.current].ready)
                     mods[vars.current].ready(button);
             }
         }
     } catch (e) {
+        console.log(e.toString());
         connected = false;
         connect();
         return;
@@ -196,13 +189,6 @@ var release = function (button) {
                     vars.timeout = 100;
                     vars.current = 0;
                 }
-        } else {
-            if (mods[button.x * 8 + button.y]) {
-                vars.current = button.x * 8 + button.y;
-                if (mods[vars.current].ready) {
-                    mods[vars.current].ready();
-                }
-            }
         }
     } catch (e) {
         connected = false;
@@ -210,5 +196,7 @@ var release = function (button) {
         return;
     }
 };
+
+console.log("Starting...");
 
 connect();

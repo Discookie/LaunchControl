@@ -44,12 +44,12 @@ var running = false;
 var intId = 0;
 var vars = require("./vars.js");
 module.exports = {
-    timeout: 20,
+    timeout: 50,
     ready: function () {
         restartable = false;
         running = true;
         int();
-        vars.timeout = 20;
+        vars.timeout = 50;
         return false;
     },
     update: function () {
